@@ -33,9 +33,9 @@ def convert_curr(num):
         df = df.rates
         GBP = df['GBP']
         USD = df['USD']
-        EUR = num/GBP #convert to EURO
-        resp = EUR*USD #convert to USD
-        resp = '${:,}'.format(round(resp)) #format it nicely
+        EUR = num/USD #convert to EURO
+        resp = EUR*GBP #convert to GBP
+        resp = '£{:,}'.format(round(resp, 2)) #format it nicely to 2 decimal places
     elif check == 'False':
         error = df.error
         msg = ' Please Try again'
@@ -57,7 +57,7 @@ app.layout = dbc.Container([
                     dbc.CardHeader([
                         dbc.Row([
                             dbc.Col(
-                                html.H2('Currency Converter - GBP to USD')
+                                html.H2('Currency Converter - USD to GBP')
                         )], justify='center'),
                         dbc.Row([
                             dbc.Col(
@@ -68,7 +68,7 @@ app.layout = dbc.Container([
                      dbc.Row([
                         dbc.Col(
                                 dbc.InputGroup([
-                                    dbc.InputGroupText('GBP'),
+                                    dbc.InputGroupText('USD'),
                                     dbc.Input(id="input1", placeholder="enter amount", value=100),
                                     dbc.Button('Calculate',id='btn1')
                                 ])
