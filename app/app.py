@@ -9,12 +9,6 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
-url = 'http://data.fixer.io/api/latest'
-key = '23a6adad66c705a6af5c284c8e1d347e'
-brokenkey = '23a6adad66c705a6af5c284c8e1d347e23232323' #was using this for error testing
-base = 'EUR' #only base allowed on this api at free tier
-sym = 'GBP,USD' #cant be a list documentation was outdated, pass in as one string
-
 #the api call function
 def api_call(url, key, syms, base):
     vars = {'access_key': key, 'base':base, 'symbols':syms} #dictionary ordered according to documentation on https://fixer.io/documentation
@@ -24,8 +18,9 @@ def api_call(url, key, syms, base):
 
 #make some functions to convert to EUR and back to GBP and USD, seems dumb but we cant use either USD or GBP as a base because we aren't rich.
 def convert_curr(num):
+    from config import basevars
     resp = [] #default var, I always do this out of habit
-    rates = api_call(url, key, sym, base)
+    rates = api_call(basevars.url, basevars.key, basevars.sym, basevars.base)
     df = pd.DataFrame(rates) #make it pandas so we can check it easier
     check = df.success[0] #we check to see if it was a success
     check = str(check) #slighty unconventional but one of the quirks of dash is it likes strings
@@ -50,9 +45,9 @@ def convert_curr(num):
 #lets make this pretty because why not, make a bootstrap webpage using flask/dash!
 #most layouts copied from the basic examples from https://dash-bootstrap-components.opensource.faculty.ai/docs/quickstart/ for the sake of speed
 
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+# app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-app.layout = dbc.Container([
+layout = dbc.Container([
                 dbc.Card([
                     dbc.CardHeader([
                         dbc.Row([
@@ -85,19 +80,18 @@ app.layout = dbc.Container([
 )
 
 #make a callback
-@app.callback(
-    Output('result', 'children'),
-    Input('btn1', 'n_clicks'),
-    State('input1','value')
-)
-def calculate(n, val):
-    if n:
-        num = int(val)
-        resp = convert_curr(num)
-        msg = str(resp)
-    else:
-        msg = 'Try me'
-    return msg
-
-if __name__ == "__main__":
-    app.run_server(debug=True)
+def register_callbacks(app):
+    from config import basevars
+    @app.callback(
+        Output('result', 'children'),
+        Input('btn1', 'n_clicks'),
+        State('input1','value')
+    )
+    def calculate(n, val):
+        if n:
+            num = int(val)
+            resp = convert_curr(num)
+            msg = str(resp)
+        else:
+            msg = 'Try me'
+        return msg
