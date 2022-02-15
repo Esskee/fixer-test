@@ -1,9 +1,9 @@
+from app import create_app
+import multiprocessing as mp
 # import pip
-# package_name = 'mypy'
+# package_name = 'pytest-cov'
 #
 # pip.main(['install', package_name])
-import multiprocessing as mp
-from app import create_app
 
 app = create_app()
 
